@@ -10,8 +10,8 @@ const config = require('./config');
 const path = require('path');
 const bot = new Bot({
   endpoints: ['wss://ws1.coopintl.com', 'wss://ws2.coopintl.com'],
-  phone: '7555123321',
-  code: '5555',
+  phone: '',
+  code: '',
 });
 let state = {
   // 125134: config.admins[0],
