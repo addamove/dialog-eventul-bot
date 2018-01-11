@@ -25,7 +25,6 @@ function AskQuestions(bot, peer, message) {
     bot.sendTextMessage(peer, config.questions[config.users[peer.id].i]);
   }
   if (config.users[peer.id].i === config.questions.length) {
-    bot.sendTextMessage(peer, keys[config.users[peer.id].i - 1]);
     config.users[peer.id].anwsers[keys[config.users[peer.id].i - 1]] =
       message.content.text;
 
@@ -177,7 +176,7 @@ function makeQR(nickname) {
   });
 }
 
-IfPeerAdmin = peer => {
+IfPeerAdmin = (peer) => {
   for (let index = 0; index < config.admins.length; index++) {
     if (peer.id !== config.admins[index].id) return true;
   }
@@ -215,7 +214,6 @@ bot.onMessage(async (peer, message) => {
       'Прежде чем начать работу с ботом установите свой никнейм по нему вас в дальнейшем смогут находить кооператоры и к нему будет привязан ваш QRcode',
     );
   }
-  // await bot.sendTextMessage(peer, JSON.stringify(config.users));  debug
 
   // первое сообщение
   if (
@@ -290,7 +288,7 @@ bot.onMessage(async (peer, message) => {
     config.users[peer.id].verified == true &&
     message.content.text.toUpperCase() === 'ЗАНОВО'
   ) {
-    makeQR(user.nick).then(result => {
+    makeQR(user.nick).then((result) => {
       bot.sendFileMessage(
         peer,
         path.join(__dirname, './' + user.nick + '_invintation.png'),
@@ -325,15 +323,7 @@ bot.onMessage(async (peer, message) => {
   }
 });
 
-bot.onInteractiveEvent(async event => {
-  // bot.sendTextMessage(
-  //   event.peer,
-  //   'activate' +
-  //     ' -- state ' +
-  //     JSON.stringify(state) +
-  //     ' ID ' +
-  //     JSON.stringify(config.users[event.peer.id].peer.id),
-  // );
+bot.onInteractiveEvent(async (event) => {
   if (event.value.split('#')[0] === 'start') {
     state[config.users[event.peer.id].peer.id] =
       config.admins[event.value.split('#')[1]];
@@ -385,7 +375,7 @@ bot.onInteractiveEvent(async event => {
       bot.sendTextMessage(config.users[val[2]].peer, 'Ваш аккаунт потвердили');
 
       if (user.nick != 'null') {
-        makeQR(user.nick).then(result => {
+        makeQR(user.nick).then((result) => {
           bot.sendFileMessage(
             config.users[val[2]].peer,
             path.join(__dirname, './' + user.nick + '_invintation.png'),
