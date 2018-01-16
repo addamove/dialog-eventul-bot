@@ -10,8 +10,8 @@ const config = require('./config');
 const path = require('path');
 const bot = new Bot({
   endpoints: ['wss://ws1.coopintl.com', 'wss://ws2.coopintl.com'],
-  phone: '',
-  code: '',
+  username: 'testbotEVENTUL',
+  password: '666',
 });
 let state = {
   // 125134: config.admins[0],
@@ -20,13 +20,11 @@ let state = {
 function AskQuestions(bot, peer, message) {
   let keys = Object.keys(config.users[peer.id].anwsers);
   if (config.users[peer.id].i <= config.questions.length - 1) {
-    config.users[peer.id].anwsers[keys[config.users[peer.id].i - 1]] =
-      message.content.text;
+    config.users[peer.id].anwsers[keys[config.users[peer.id].i - 1]] = message.content.text;
     bot.sendTextMessage(peer, config.questions[config.users[peer.id].i]);
   }
   if (config.users[peer.id].i === config.questions.length) {
-    config.users[peer.id].anwsers[keys[config.users[peer.id].i - 1]] =
-      message.content.text;
+    config.users[peer.id].anwsers[keys[config.users[peer.id].i - 1]] = message.content.text;
 
     bot.sendTextMessage(
       peer,
@@ -39,9 +37,7 @@ function AskQuestions(bot, peer, message) {
               •	Ваша должность? - ${config.users[peer.id].anwsers.vacation}
   
               •	Статус - ${config.users[peer.id].anwsers.status}
-              •	Сфера компетенций/интересов - ${
-                config.users[peer.id].anwsers.spehre
-              }
+              •	Сфера компетенций/интересов - ${config.users[peer.id].anwsers.spehre}
                     
                     `,
     );
@@ -54,61 +50,57 @@ async function checking(bot, peer) {
   //  возможность отправить ответ отключаю в onINteractiveMessage
   config.users[peer.id].verification = true;
 
-  bot.sendInteractiveMessage(
-    peer,
-    'Сейчас вы можете отправить или отредактировать данные',
-    [
-      {
-        actions: [
-          {
-            id: 's',
-            widget: {
-              type: 'button',
-              value: 'complete',
-              label: 'Отправить',
-            },
+  bot.sendInteractiveMessage(peer, 'Сейчас вы можете отправить или отредактировать данные', [
+    {
+      actions: [
+        {
+          id: 's',
+          widget: {
+            type: 'button',
+            value: 'complete',
+            label: 'Отправить',
           },
-        ],
-      },
-      {
-        actions: [
-          {
-            id: 's',
-            widget: {
-              type: 'select',
-              label: 'Редактировать',
-              options: [
-                {
-                  label: 'ФИО',
-                  value: 'fio_0',
-                },
-                {
-                  label: 'Дата рождения',
-                  value: 'birth_1',
-                },
-                {
-                  label: 'Регион',
-                  value: 'region_2',
-                },
-                {
-                  label: 'Должность',
-                  value: 'vacation_3',
-                },
-                {
-                  label: 'Статус',
-                  value: 'status_4',
-                },
-                {
-                  label: 'Сфера интересов',
-                  value: 'spehre_5',
-                },
-              ],
-            },
+        },
+      ],
+    },
+    {
+      actions: [
+        {
+          id: 's',
+          widget: {
+            type: 'select',
+            label: 'Редактировать',
+            options: [
+              {
+                label: 'ФИО',
+                value: 'fio_0',
+              },
+              {
+                label: 'Дата рождения',
+                value: 'birth_1',
+              },
+              {
+                label: 'Регион',
+                value: 'region_2',
+              },
+              {
+                label: 'Должность',
+                value: 'vacation_3',
+              },
+              {
+                label: 'Статус',
+                value: 'status_4',
+              },
+              {
+                label: 'Сфера интересов',
+                value: 'spehre_5',
+              },
+            ],
           },
-        ],
-      },
-    ],
-  );
+        },
+      ],
+    },
+  ]);
 }
 
 function sendVerificationInfoToadmin(bot, peer) {
@@ -263,16 +255,13 @@ bot.onMessage(async (peer, message) => {
 
   if (config.users[peer.id].edit) {
     let oldVal = config.users[peer.id].anwsers[config.users[peer.id].editValue];
-    config.users[peer.id].anwsers[config.users[peer.id].editValue] =
-      message.content.text;
+    config.users[peer.id].anwsers[config.users[peer.id].editValue] = message.content.text;
     await bot.sendTextMessage(
       peer,
       JSON.stringify(
         'Изменили ' +
           config.questions[
-            Object.keys(config.users[peer.id].anwsers).indexOf(
-              config.users[peer.id].editValue,
-            )
+            Object.keys(config.users[peer.id].anwsers).indexOf(config.users[peer.id].editValue)
           ] +
           ' c ' +
           oldVal +
@@ -284,30 +273,18 @@ bot.onMessage(async (peer, message) => {
   }
 
   //Переделываем QRкод если пользователь написал заново
-  if (
-    config.users[peer.id].verified == true &&
-    message.content.text.toUpperCase() === 'ЗАНОВО'
-  ) {
+  if (config.users[peer.id].verified == true && message.content.text.toUpperCase() === 'ЗАНОВО') {
     makeQR(user.nick).then((result) => {
-      bot.sendFileMessage(
-        peer,
-        path.join(__dirname, './' + user.nick + '_invintation.png'),
-      );
+      bot.sendFileMessage(peer, path.join(__dirname, './' + user.nick + '_invintation.png'));
     });
   }
 
   // help section
-  if (
-    message.content.text.toLowerCase() === 'отзыв' ||
-    config.users[peer.id].needHelp === true
-  ) {
+  if (message.content.text.toLowerCase() === 'отзыв' || config.users[peer.id].needHelp === true) {
     if (config.users[peer.id].needHelp) {
       bot.sendTextMessage(peer, 'Отзыв отправлен. Всего вам доброго!');
 
-      bot.sendTextMessage(
-        state[config.users[event.peer.id]],
-        message.content.text,
-      );
+      bot.sendTextMessage(state[config.users[event.peer.id]], message.content.text);
       config.users[peer.id].needHelp = false;
     } else {
       bot.sendTextMessage(peer, 'Напишите отзыв');
@@ -325,19 +302,16 @@ bot.onMessage(async (peer, message) => {
 
 bot.onInteractiveEvent(async (event) => {
   if (event.value.split('#')[0] === 'start') {
-    state[config.users[event.peer.id].peer.id] =
-      config.admins[event.value.split('#')[1]];
+    state[config.users[event.peer.id].peer.id] = config.admins[event.value.split('#')[1]];
 
     bot.sendTextMessage(event.peer, config.questions[0]);
     // начинаем верифицировать пользователя т е теперь он при отправке сообщения попадет в секцию где задаются вопросы
     config.users[String(event.peer.id)].verification = true;
     config.users[event.peer.id].i++;
+    // bot.sendTextMessage(event.peer, JSON.stringify(state));
   }
 
-  if (
-    event.value === 'complete' &&
-    config.users[event.peer.id].verification == true
-  ) {
+  if (event.value === 'complete' && config.users[event.peer.id].verification == true) {
     sendVerificationInfoToadmin(bot, event.peer);
     // больше не попадем в секцию где задаются вопросы и отключаем возможность многократно отправить админу информацию о себе
     config.users[event.peer.id].verification = false;
@@ -360,12 +334,16 @@ bot.onInteractiveEvent(async (event) => {
   }
   //потверждение верификациN админом
   if (event.value.split('_')[0] === 'ver') {
-    // let adminPeer = state[config.users[event.peer.id]];
-    let adminPeer = state[1394142737];
-    bot.sendTextMessage(event.peer, JSON.stringify(adminPeer));
+    let val = event.value.split('_'); // пример 'ver_true_' + JSON.stringify(config.users[peer.id].peer.id)
+
+    let adminPeer = state[config.users[val[2]].peer.id];
+    // let adminPeer = state[1394142737];
+    // bot.sendTextMessage(
+    //   event.peer,
+    //   JSON.stringify(adminPeer) + ' ' + JSON.stringify(state[event.peer.id]),
+    // );
 
     //
-    let val = event.value.split('_'); // пример 'ver_true_' + JSON.stringify(config.users[peer.id].peer.id)
     if (val[1] === 'true') {
       //админ потвердил
       bot.sendTextMessage(adminPeer, 'Потвреждение отправлено');
@@ -386,10 +364,7 @@ bot.onInteractiveEvent(async (event) => {
           'Чтобы изменить QRcode после смены никнейма напишите заново',
         );
       } else {
-        bot.sendTextMessage(
-          config.users[val[2]].peer,
-          'Установите никнейм в настройках',
-        );
+        bot.sendTextMessage(config.users[val[2]].peer, 'Установите никнейм в настройках');
       }
     } else {
       // сообщения с этим пиром уйдут админу
